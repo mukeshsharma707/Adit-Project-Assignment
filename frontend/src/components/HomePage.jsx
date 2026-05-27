@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import './HomePage.css'
 
 const features = [
@@ -27,8 +28,12 @@ export default function HomePage() {
             polished landing page, then add authentication, dashboard, and task CRUD.
           </p>
           <div className="hero-actions">
-            <button className="button primary">Get Started</button>
-            <button className="button secondary">View Features</button>
+            <Link className="button primary" to="/signup">
+              Get Started
+            </Link>
+            <Link className="button secondary" to="/login">
+              Login
+            </Link>
           </div>
         </div>
         <div className="hero-visual">
