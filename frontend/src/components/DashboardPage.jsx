@@ -13,6 +13,7 @@ export default function DashboardPage() {
   const [page, setPage] = useState(1)
   const [limit] = useState(6)
   const [pagination, setPagination] = useState({ total: 0, page: 1, limit, totalPages: 1 })
+  const [counts, setCounts] = useState({ completed: 0, pending: 0 })
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [error, setError] = useState('')
@@ -38,6 +39,7 @@ export default function DashboardPage() {
         })
         setTasks(payload.tasks)
         setPagination(payload.pagination)
+        setCounts(payload.counts || { completed: 0, pending: 0 })
       } catch (err) {
         setError(err.message)
       } finally {
@@ -47,9 +49,6 @@ export default function DashboardPage() {
 
     loadTasks()
   }, [user, statusFilter, search, page, limit])
-
-  const activeTasks = useMemo(() => tasks.filter((task) => !task.completed), [tasks])
-  const completedTasks = useMemo(() => tasks.filter((task) => task.completed), [tasks])
 
   const handleSaveTask = async (event) => {
     event.preventDefault()
@@ -149,8 +148,8 @@ export default function DashboardPage() {
         </div>
 
         <div className="dashboard-summary">
-          <span>{activeTasks.length} pending</span>
-          <span>{completedTasks.length} completed</span>
+          <span>{counts.pending} pending</span>
+          <span>{counts.completed} completed</span>
           <span>{pagination.total} total</span>
         </div>
 

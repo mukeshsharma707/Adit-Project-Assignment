@@ -31,6 +31,14 @@ router.get('/', async (req, res) => {
       .skip((page - 1) * limit)
       .limit(limit)
 
+    // Get counts for completed and pending (only when viewing all tasks)
+    let completedCount = 0
+    let pendingCount = 0
+    if (!status) {
+      completedCount = await Task.countDocuments({ user: req.user._id, completed: true })
+      pendingCount = await Task.countDocuments({ user: req.user._id, completed: false })
+    }
+
     res.json({
       tasks,
       pagination: {
@@ -38,6 +46,10 @@ router.get('/', async (req, res) => {
         page,
         limit,
         totalPages: Math.ceil(total / limit),
+      },
+      counts: {
+        completed: completedCount,
+        pending: pendingCount,
       },
     })
   } catch (error) {
