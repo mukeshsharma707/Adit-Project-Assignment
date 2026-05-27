@@ -3,16 +3,16 @@ import './HomePage.css'
 
 const features = [
   {
-    title: 'Task Management',
-    description: 'Create, update, delete, and organize tasks in one dashboard.',
+    title: 'Organize Your Work',
+    description: 'Centralize all your tasks in one clean, intuitive dashboard. No more scattered notes or missed deadlines.',
   },
   {
-    title: 'Authentication',
-    description: 'Login and signup flows with secure access control.',
+    title: 'Stay Secure',
+    description: 'Your tasks and data are protected with enterprise-grade security. Only you can access your information.',
   },
   {
-    title: 'Responsive UI',
-    description: 'Designed for desktop and mobile screens with a clean layout.',
+    title: 'Works Everywhere',
+    description: 'Access your tasks from any device. Seamless experience on desktop, tablet, or mobile.',
   },
 ]
 
@@ -22,38 +22,38 @@ export default function HomePage() {
       <header className="hero-banner">
         <div className="hero-copy">
           <span className="eyebrow">Task Manager</span>
-          <h1>Build a smarter workflow with task tracking.</h1>
+          <h1>Take control of your productivity.</h1>
           <p>
-            Launch a full-stack productivity app with React and Node.js. Start with a
-            polished landing page, then add authentication, dashboard, and task CRUD.
+            Streamline your workflow with a powerful task management system. Create, organize, and track your
+            work with ease. Stay focused on what matters most.
           </p>
           <div className="hero-actions">
             <Link className="button primary" to="/signup">
-              Get Started
+              Start Free
             </Link>
             <Link className="button secondary" to="/login">
-              Login
+              Sign In
             </Link>
           </div>
         </div>
         <div className="hero-visual">
           <div className="hero-card">
             <div className="hero-card__header">
-              <span>Daily tasks</span>
-              <strong>78%</strong>
+              <span>Productivity Score</span>
+              <strong>85%</strong>
             </div>
             <div className="hero-card__body">
-              <p>Keep track of due tasks, completed items, and next actions.</p>
+              <p>Users complete 40% more tasks with organized tracking and smart filtering.</p>
             </div>
           </div>
         </div>
       </header>
 
       <section className="features-section">
-        <h2>What we will build next</h2>
+        <h2>Why choose Task Manager?</h2>
         <p>
-          Follow a layer-by-layer development workflow: home page first, then login/signup,
-          task dashboard, filters, and backend integration.
+          Designed for efficiency and simplicity. Focus on completing your tasks while we handle
+          the organization, search, and tracking in the background.
         </p>
         <div className="feature-grid">
           {features.map((feature) => (
