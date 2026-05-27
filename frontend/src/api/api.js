@@ -32,9 +32,14 @@ export const signupUser = async ({ name, email, password }) => {
   return parseResponse(response)
 }
 
-export const fetchTasks = async ({ status, token }) => {
-  const query = status ? `?status=${status}` : ''
-  const response = await fetch(`${API_BASE}/tasks${query}`, {
+export const fetchTasks = async ({ status, search, page, limit, token }) => {
+  const params = new URLSearchParams()
+  if (status) params.set('status', status)
+  if (search) params.set('search', search)
+  if (page) params.set('page', page)
+  if (limit) params.set('limit', limit)
+
+  const response = await fetch(`${API_BASE}/tasks?${params.toString()}`, {
     headers: jsonHeaders(token),
   })
   return parseResponse(response)

@@ -32,13 +32,27 @@
   gap: 18px;
 }
 
-.auth-form label {
+.search-form,
+.auth-form {
+  display: grid;
+  gap: 18px;
+}
+
+.search-form {
+  grid-template-columns: 1fr auto;
+  gap: 14px;
+  align-items: flex-end;
+  margin-bottom: 20px;
+}
+
+.search-form label {
   display: grid;
   gap: 10px;
   color: #374151;
   font-weight: 600;
 }
 
+.search-form input,
 .auth-form input {
   width: 100%;
   padding: 14px 16px;
@@ -47,6 +61,11 @@
   font-size: 1rem;
   color: #111827;
   background: #f8fafc;
+}
+
+.search-form .button {
+  height: 52px;
+  align-self: end;
 }
 
 .auth-form input:focus {
@@ -111,6 +130,19 @@
   background: #2563eb;
   color: #ffffff;
   border-color: transparent;
+}
+
+.pagination-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.pagination-bar span {
+  font-weight: 600;
+  color: #334155;
 }
 
 .task-list {

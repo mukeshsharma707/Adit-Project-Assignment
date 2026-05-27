@@ -8,6 +8,11 @@ export default function DashboardPage() {
   const { user } = useAuth()
   const [tasks, setTasks] = useState([])
   const [statusFilter, setStatusFilter] = useState('all')
+  const [search, setSearch] = useState('')
+  const [searchTerm, setSearchTerm] = useState('')
+  const [page, setPage] = useState(1)
+  const [limit] = useState(6)
+  const [pagination, setPagination] = useState({ total: 0, page: 1, limit, totalPages: 1 })
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [error, setError] = useState('')
@@ -24,8 +29,15 @@ export default function DashboardPage() {
       setLoading(true)
       setError('')
       try {
-        const taskList = await fetchTasks({ status: statusFilter === 'all' ? '' : statusFilter, token: user.token })
-        setTasks(taskList)
+        const payload = await fetchTasks({
+          status: statusFilter === 'all' ? '' : statusFilter,
+          search,
+          page,
+          limit,
+          token: user.token,
+        })
+        setTasks(payload.tasks)
+        setPagination(payload.pagination)
       } catch (err) {
         setError(err.message)
       } finally {
@@ -34,7 +46,7 @@ export default function DashboardPage() {
     }
 
     loadTasks()
-  }, [user, statusFilter])
+  }, [user, statusFilter, search, page, limit])
 
   const activeTasks = useMemo(() => tasks.filter((task) => !task.completed), [tasks])
   const completedTasks = useMemo(() => tasks.filter((task) => task.completed), [tasks])
@@ -53,6 +65,7 @@ export default function DashboardPage() {
       setTasks((current) => [newTask, ...current])
       setTitle('')
       setDescription('')
+      setPage(1)
     } catch (err) {
       setError(err.message)
     } finally {
@@ -112,6 +125,17 @@ export default function DashboardPage() {
     }
   }
 
+  const handleSearchSubmit = (event) => {
+    event.preventDefault()
+    setSearch(searchTerm.trim())
+    setPage(1)
+  }
+
+  const goToPage = (newPage) => {
+    if (newPage < 1 || newPage > pagination.totalPages) return
+    setPage(newPage)
+  }
+
   if (!user) {
     return <Navigate to="/login" replace />
   }
@@ -121,13 +145,29 @@ export default function DashboardPage() {
       <section className="auth-panel">
         <div className="auth-header">
           <h1>Task dashboard</h1>
-          <p>Manage your tasks, mark them complete, edit details, and filter your task list.</p>
+          <p>Search tasks, filter status, and manage your work with pagination support.</p>
         </div>
 
         <div className="dashboard-summary">
           <span>{activeTasks.length} pending</span>
           <span>{completedTasks.length} completed</span>
+          <span>{pagination.total} total</span>
         </div>
+
+        <form className="search-form" onSubmit={handleSearchSubmit}>
+          <label>
+            Search tasks
+            <input
+              type="search"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              placeholder="Search by title or description"
+            />
+          </label>
+          <button type="submit" className="button secondary">
+            Search
+          </button>
+        </form>
 
         <form className="auth-form" onSubmit={handleSaveTask}>
           {error && <div className="auth-error">{error}</div>}
@@ -158,21 +198,30 @@ export default function DashboardPage() {
           <button
             type="button"
             className={statusFilter === 'all' ? 'filter active' : 'filter'}
-            onClick={() => setStatusFilter('all')}
+            onClick={() => {
+              setStatusFilter('all')
+              setPage(1)
+            }}
           >
             All
           </button>
           <button
             type="button"
             className={statusFilter === 'pending' ? 'filter active' : 'filter'}
-            onClick={() => setStatusFilter('pending')}
+            onClick={() => {
+              setStatusFilter('pending')
+              setPage(1)
+            }}
           >
             Pending
           </button>
           <button
             type="button"
             className={statusFilter === 'completed' ? 'filter active' : 'filter'}
-            onClick={() => setStatusFilter('completed')}
+            onClick={() => {
+              setStatusFilter('completed')
+              setPage(1)
+            }}
           >
             Completed
           </button>
@@ -181,53 +230,74 @@ export default function DashboardPage() {
         {loading ? (
           <p>Loading tasks...</p>
         ) : (
-          <div className="task-list">
-            {tasks.length === 0 ? (
-              <p className="empty-state">No tasks yet. Add one to get started.</p>
-            ) : (
-              tasks.map((task) => (
-                <article key={task._id} className={`task-card ${task.completed ? 'completed' : ''}`}>
-                  <div className="task-card__main">
-                    <div>
-                      <h3>{task.title}</h3>
-                      <p>{task.description || 'No description provided.'}</p>
-                    </div>
-                    <div className="task-card__actions">
-                      <button type="button" className="secondary" onClick={() => handleToggleComplete(task)}>
-                        {task.completed ? 'Mark pending' : 'Mark complete'}
-                      </button>
-                      <button type="button" className="secondary" onClick={() => startEdit(task)}>
-                        Edit
-                      </button>
-                      <button type="button" className="secondary danger" onClick={() => handleDelete(task._id)}>
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                  {editingTaskId === task._id && (
-                    <div className="task-edit-panel">
-                      <label>
-                        Title
-                        <input value={editTitle} onChange={(event) => setEditTitle(event.target.value)} />
-                      </label>
-                      <label>
-                        Description
-                        <input value={editDescription} onChange={(event) => setEditDescription(event.target.value)} />
-                      </label>
-                      <div className="task-edit-actions">
-                        <button type="button" className="button" onClick={saveEdit}>
-                          Save
+          <>
+            <div className="task-list">
+              {tasks.length === 0 ? (
+                <p className="empty-state">No tasks found. Try a different search or add a new task.</p>
+              ) : (
+                tasks.map((task) => (
+                  <article key={task._id} className={`task-card ${task.completed ? 'completed' : ''}`}>
+                    <div className="task-card__main">
+                      <div>
+                        <h3>{task.title}</h3>
+                        <p>{task.description || 'No description provided.'}</p>
+                      </div>
+                      <div className="task-card__actions">
+                        <button type="button" className="secondary" onClick={() => handleToggleComplete(task)}>
+                          {task.completed ? 'Mark pending' : 'Mark complete'}
                         </button>
-                        <button type="button" className="button secondary" onClick={cancelEdit}>
-                          Cancel
+                        <button type="button" className="secondary" onClick={() => startEdit(task)}>
+                          Edit
+                        </button>
+                        <button type="button" className="secondary danger" onClick={() => handleDelete(task._id)}>
+                          Delete
                         </button>
                       </div>
                     </div>
-                  )}
-                </article>
-              ))
+                    {editingTaskId === task._id && (
+                      <div className="task-edit-panel">
+                        <label>
+                          Title
+                          <input value={editTitle} onChange={(event) => setEditTitle(event.target.value)} />
+                        </label>
+                        <label>
+                          Description
+                          <input value={editDescription} onChange={(event) => setEditDescription(event.target.value)} />
+                        </label>
+                        <div className="task-edit-actions">
+                          <button type="button" className="button" onClick={saveEdit}>
+                            Save
+                          </button>
+                          <button type="button" className="button secondary" onClick={cancelEdit}>
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </article>
+                ))
+              )}
+            </div>
+
+            {pagination.totalPages > 1 && (
+              <div className="pagination-bar">
+                <button type="button" className="button secondary" onClick={() => goToPage(page - 1)} disabled={page === 1}>
+                  Previous
+                </button>
+                <span>
+                  Page {page} of {pagination.totalPages}
+                </span>
+                <button
+                  type="button"
+                  className="button secondary"
+                  onClick={() => goToPage(page + 1)}
+                  disabled={page === pagination.totalPages}
+                >
+                  Next
+                </button>
+              </div>
             )}
-          </div>
+          </>
         )}
       </section>
     </main>

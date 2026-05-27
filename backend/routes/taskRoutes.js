@@ -8,13 +8,38 @@ router.use(authenticate)
 
 router.get('/', async (req, res) => {
   const status = req.query.status
+  const search = req.query.search
+  const page = Math.max(Number(req.query.page) || 1, 1)
+  const limit = Math.max(Number(req.query.limit) || 8, 1)
+
   const filter = { user: req.user._id }
   if (status === 'completed') filter.completed = true
   if (status === 'pending') filter.completed = false
 
+  if (search) {
+    const searchRegex = new RegExp(search.trim(), 'i')
+    filter.$or = [
+      { title: searchRegex },
+      { description: searchRegex },
+    ]
+  }
+
   try {
-    const tasks = await Task.find(filter).sort({ createdAt: -1 })
-    res.json(tasks)
+    const total = await Task.countDocuments(filter)
+    const tasks = await Task.find(filter)
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+
+    res.json({
+      tasks,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    })
   } catch (error) {
     console.error(error)
     res.status(500).json({ message: 'Failed to fetch tasks.' })

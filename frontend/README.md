@@ -1,16 +1,34 @@
-# React + Vite
+# Task Manager Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This frontend powers a task management application built with React and Vite.
 
-Currently, two official plugins are available:
+## Local setup
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+1. Navigate to `frontend`
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Make sure the backend is running on `http://localhost:5000`
+4. Create `.env` with:
+   ```env
+   VITE_API_URL=http://localhost:5000/api
+   ```
+5. Start the app:
+   ```bash
+   npm run dev
+   ```
 
-## React Compiler
+## App features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Home page with auth CTA
+- Signup and login pages
+- Protected task dashboard
+- Search tasks by title and description
+- Pagination for task lists
+- Task filtering by status
 
-## Expanding the ESLint configuration
+## Notes
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- The root README contains full project setup and API details.
+- The frontend consumes backend routes from `VITE_API_URL`.
