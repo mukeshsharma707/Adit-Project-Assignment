@@ -206,11 +206,18 @@
   margin-top: 18px;
   display: grid;
   gap: 14px;
+  padding: 20px;
+  border-radius: 20px;
+  background: #f0f9ff;
+  border: 1px solid #cce5ff;
 }
 
 .task-edit-panel label {
   display: grid;
   gap: 10px;
+  color: #374151;
+  font-weight: 600;
+  font-size: 0.95rem;
 }
 
 .task-edit-panel input {
@@ -218,13 +225,26 @@
   padding: 12px 14px;
   border-radius: 16px;
   border: 1px solid #cbd5e1;
-  background: #f8fafc;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 1rem;
+}
+
+.task-edit-panel input::placeholder {
+  color: #9ca3af;
+}
+
+.task-edit-panel input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
 }
 
 .task-edit-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
+  margin-top: 6px;
 }
 
 .empty-state {
