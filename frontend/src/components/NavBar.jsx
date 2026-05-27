@@ -3,7 +3,7 @@ import { useAuth } from '../contexts/AuthContext.jsx'
 import './NavBar.css'
 
 export default function NavBar() {
-  const { user, logout } = useAuth()
+  const { user, logout, loading } = useAuth()
 
   return (
     <nav className="app-nav">
@@ -12,8 +12,9 @@ export default function NavBar() {
       </div>
       <div className="nav-actions">
         <Link to="/">Home</Link>
-        {user ? (
+        {loading ? null : user ? (
           <>
+            <span className="nav-user">Hi, {user.name}</span>
             <Link className="nav-primary" to="/dashboard">
               Dashboard
             </Link>

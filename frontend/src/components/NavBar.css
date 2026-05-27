@@ -29,6 +29,12 @@
   font-weight: 500;
 }
 
+.nav-user {
+  color: #1f2937;
+  font-weight: 600;
+  margin-right: 12px;
+}
+
 .nav-primary {
   color: #ffffff;
   background: #2563eb;
